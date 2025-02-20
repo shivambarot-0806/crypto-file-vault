@@ -22,6 +22,10 @@ public class HiddenFile {
     @Column(name = "file_path", length = 500)
     private String filePath;
     
+    @Lob
+    @Column(name = "file_data")
+    private byte[] fileData;
+
     @Column(name = "encrypted_aes_key", columnDefinition = "TEXT")
     private String encryptedAESKey;
     
@@ -70,7 +74,15 @@ public class HiddenFile {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
+    
+    public byte[] getFileData() {
+        return fileData;
+    }
  
+    public void setFileData(byte[] fileData) {
+        this.fileData = fileData;
+    }
+
     public String getEncryptedAESKey() {
         return encryptedAESKey;
     }

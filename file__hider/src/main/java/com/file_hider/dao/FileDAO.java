@@ -43,12 +43,32 @@ public class FileDAO {
         }
     }
 
+    public HiddenFile findByFilePath(String filePath) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT f FROM HiddenFile f WHERE f.filePath = :filePath", HiddenFile.class)
+                     .setParameter("filePath", filePath)
+                     .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
     public List<HiddenFile> findByUserId(Integer userId) {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery("SELECT f FROM HiddenFile f WHERE f.user.id = :userId", HiddenFile.class)
                      .setParameter("userId", userId)
                      .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<HiddenFile> findAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT f FROM HiddenFile f", HiddenFile.class).getResultList();
         } finally {
             em.close();
         }
