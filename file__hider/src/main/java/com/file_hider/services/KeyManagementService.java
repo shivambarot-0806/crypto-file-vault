@@ -3,10 +3,13 @@ package com.file_hider.services;
 import com.codahale.shamir.*;
 import com.file_hider.utils.RSAUtil;
 
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,9 +36,17 @@ public class KeyManagementService {
     /**
      * Reconstructs the RSA private key from shares.
      */
-    public static byte[] reconstructKey(Map<Integer, byte[]> shares) {
+    public static PrivateKey reconstructKey(Map<Integer, byte[]> shares) {
         Scheme scheme = new Scheme(new SecureRandom(), TOTAL_SHARES, REQUIRED_SHARES);
-        return scheme.join(shares);
+        byte[] privateKeyBytes = scheme.join(shares);
+        try {
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        return keyFactory.generatePrivate(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException("Failed to reconstruct private key", e);
+        }
+
     }
 
     /**
@@ -79,12 +90,12 @@ public class KeyManagementService {
                 
                 // Decode shares and reconstruct the private key
                 Map<Integer, byte[]> decodedShares = KeyManagementService.decodeShares(subsetShares);
-                byte[] reconstructedKeyBytes = KeyManagementService.reconstructKey(decodedShares);
+                PrivateKey reconstructedKeyBytes = KeyManagementService.reconstructKey(decodedShares);
                 
                 // Verify if reconstruction is correct
                 System.out.println("\nOriginal Private Key Length: " + privateKey.getEncoded().length);
-                System.out.println("Reconstructed Private Key Length: " + reconstructedKeyBytes.length);
-                System.out.println("Match: " + (privateKey.getEncoded().length == reconstructedKeyBytes.length));
+                System.out.println("Reconstructed Private Key Length: " + reconstructedKeyBytes);
+                // System.out.println("Match: " + (privateKey.getEncoded().length == reconstructedKeyBytes.length));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
