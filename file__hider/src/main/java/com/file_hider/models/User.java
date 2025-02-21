@@ -26,6 +26,12 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "public_key", columnDefinition = "TEXT")
+    private String publicKey;
+
+    // @Column(name = "private_key", columnDefinition = "TEXT")
+    // private String privateKey;
+
     // Constructors
     public User() { }
 
@@ -84,4 +90,20 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    // public String getPrivateKey() {
+    //     return privateKey;
+    // }
+
+    // public void setPrivateKey(String privateKey) {
+    //     this.privateKey = privateKey;
+    // }
 }
