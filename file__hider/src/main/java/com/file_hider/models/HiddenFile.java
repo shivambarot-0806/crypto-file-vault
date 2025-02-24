@@ -19,7 +19,7 @@ public class HiddenFile {
     @Column(name = "file_name", length = 255)
     private String fileName;
     
-    @Column(name = "file_path", length = 500)
+    @Column(name = "file_path", length = 1000)
     private String filePath;
     
     @Lob
@@ -35,10 +35,11 @@ public class HiddenFile {
     // Constructors
     public HiddenFile() { }
 
-    public HiddenFile(User user, String fileName, String filePath, String encryptedAESKey) {
+    public HiddenFile(User user, String fileName, String filePath, byte[] fileData, String encryptedAESKey) {
         this.user = user;
         this.fileName = fileName;
         this.filePath = filePath;
+        this.fileData = fileData;
         this.encryptedAESKey = encryptedAESKey;
     }
 

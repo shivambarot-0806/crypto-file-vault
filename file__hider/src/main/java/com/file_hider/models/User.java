@@ -18,7 +18,7 @@ public class User {
     private String passwordHash;
     
     @Column(name = "otp_hash", length = 255)
-    private String otpHash;
+    private String otp;
     
     @Column(name = "otp_expiry")
     private LocalDateTime otpExpiry;
@@ -35,10 +35,10 @@ public class User {
     // Constructors
     public User() { }
 
-    public User(String email, String passwordHash, String otpHash, LocalDateTime otpExpiry) {
+    public User(String email, String passwordHash, String otp, LocalDateTime otpExpiry) {
         this.email = email;
         this.passwordHash = passwordHash;
-        this.otpHash = otpHash;
+        this.otp = otp;
         this.otpExpiry = otpExpiry;
     }
 
@@ -67,12 +67,12 @@ public class User {
         this.passwordHash = passwordHash;
     }
  
-    public String getOtpHash() {
-        return otpHash;
+    public String getOtp() {
+        return otp;
     }
  
-    public void setOtpHash(String otpHash) {
-        this.otpHash = otpHash;
+    public void setOtp(String otpHash) {
+        this.otp = otpHash;
     }
  
     public LocalDateTime getOtpExpiry() {
@@ -99,11 +99,4 @@ public class User {
         this.publicKey = publicKey;
     }
 
-    // public String getPrivateKey() {
-    //     return privateKey;
-    // }
-
-    // public void setPrivateKey(String privateKey) {
-    //     this.privateKey = privateKey;
-    // }
 }
