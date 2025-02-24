@@ -50,7 +50,6 @@ public class FileEncryptionService {
         byte[] combinedData = new byte[iv.getIV().length + encryptedFileData.length];
         System.arraycopy(iv.getIV(), 0, combinedData, 0, iv.getIV().length);
         System.arraycopy(encryptedFileData, 0, combinedData, iv.getIV().length, encryptedFileData.length);
-        // Files.write(Path.of(filePath), combinedData);
 
         // Encrypt the AES key using RSA public key (convert AES key to Base64 first if needed)
         String aesKeyStr = AESUtil.encodeKey(aesKey);
@@ -69,13 +68,10 @@ public class FileEncryptionService {
      * @return true if decryption is successful.
      * @throws Exception In case of decryption errors.
      */
-    public static boolean decryptFile(String encryptedAESKey, byte[] combinedData, String filePath, java.security.PrivateKey rsaPrivateKey) throws Exception {
+    public static byte[] decryptFileTobytes(String encryptedAESKey, byte[] combinedData, String filePath, java.security.PrivateKey rsaPrivateKey) throws Exception {
         // Decrypt AES key using RSA private key
         String aesKeyStr = RSAUtil.decryptAESKey(encryptedAESKey, rsaPrivateKey);
         SecretKey aesKey = AESUtil.decodeKey(aesKeyStr);
-
-        // Read combined IV and encrypted file data from file
-        // byte[] combinedData = Files.readAllBytes(Path.of(filePath));
 
         // Extract IV (first 16 bytes for AES)
         byte[] ivBytes = new byte[16];
@@ -89,9 +85,6 @@ public class FileEncryptionService {
         // Decrypt file data using AES
         byte[] decryptedFileData = AESUtil.decryptFile(encryptedFileData, aesKey, iv);
 
-        // Write decrypted file
-        Files.write(Path.of(filePath), decryptedFileData);
-
-        return true;
+        return decryptedFileData;
     }
 }

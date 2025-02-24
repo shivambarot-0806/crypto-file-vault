@@ -3,11 +3,12 @@ package com.file_hider.utils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Base64;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.file_hider.services.KeyManagementService;
 
 /**
  * A utility class to securely store key shares in multiple, hidden system locations.
@@ -30,7 +31,7 @@ public class KeyStorageUtil {
     
     // For simplicity, we can also define an ADMIN_PATH if needed.
     // Here we simply reuse SYSTEM_PATH.
-    private static final String ADMIN_PATH; 
+    // private static final String ADMIN_PATH; 
 
     static {
         String osName = System.getProperty("os.name").toLowerCase();
@@ -46,7 +47,7 @@ public class KeyStorageUtil {
             USB_PATH = "/media/usb/FileHider/keys/";  // Adjust according to your system.
         }
         // For this example, we use SYSTEM_PATH as the admin location.
-        ADMIN_PATH = SYSTEM_PATH;
+        // ADMIN_PATH = SYSTEM_PATH;
     }
 
     /**
@@ -62,12 +63,15 @@ public class KeyStorageUtil {
      * @throws IOException If an I/O error occurs.
      */
     public static void storeKeyShares(Map<Integer, byte[]> shares) throws IOException {
-        for (Map.Entry<Integer, byte[]> entry : shares.entrySet()) {
+        
+        Map<Integer, String> encodedShares = KeyManagementService.encodeShares(shares);
+        
+        for (Map.Entry<Integer, String> entry : encodedShares.entrySet()) {
             int shareNumber = entry.getKey();
-            byte[] shareData = entry.getValue();
+            String shareData = entry.getValue();
             
             // Encode share data as a Base64 string.
-            String shareStr = Base64.getEncoder().encodeToString(shareData);
+            // String shareStr = Base64.getEncoder().encodeToString(shareData);
             // Choose a target storage location based on share number.
             String targetPath = selectStorageLocation(shareNumber);
             // Ensure the target directory exists.
@@ -78,7 +82,7 @@ public class KeyStorageUtil {
             // Define the file name (e.g., "share_1.key").
             File shareFile = new File(dir, "share_" + shareNumber + ".key");
             // Write the Base64 encoded share to the file.
-            Files.write(shareFile.toPath(), shareStr.getBytes(), StandardOpenOption.CREATE,
+            Files.write(shareFile.toPath(), shareData.getBytes(), StandardOpenOption.CREATE,
                         StandardOpenOption.TRUNCATE_EXISTING);
         }
     }
